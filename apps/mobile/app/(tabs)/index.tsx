@@ -6,6 +6,7 @@ import { theme } from '@/constants/theme';
 import { Card } from '@/components/ui/Card';
 import { Badge } from '@/components/ui/Badge';
 import { useAuthStore } from '@/stores/auth.store';
+import { useNotificationsStore } from '@/stores/notifications.store';
 import api from '@/services/api';
 
 interface DashboardStats {
@@ -18,6 +19,7 @@ interface DashboardStats {
 
 export default function HomeScreen() {
   const { user } = useAuthStore();
+  const { unreadCount, markAllRead } = useNotificationsStore();
   const [stats, setStats] = useState<DashboardStats | null>(null);
   const [recentItems, setRecentItems] = useState<any[]>([]);
   const [refreshing, setRefreshing] = useState(false);
@@ -61,7 +63,24 @@ export default function HomeScreen() {
           <Text style={styles.greeting}>Welcome back,</Text>
           <Text style={styles.name}>{user?.name || 'User'}</Text>
         </View>
-        <Badge label={user?.role ?? 'student'} status={user?.role === 'admin' ? 'approved' : 'available'} />
+        <View style={styles.headerRight}>
+          {/* Notification bell */}
+          <TouchableOpacity style={styles.bellBtn} onPress={markAllRead}>
+            <Ionicons name="notifications-outline" size={22} color={theme.colors.text} />
+            {unreadCount > 0 && (
+              <View style={styles.bellBadge}>
+                <Text style={styles.bellBadgeText}>{unreadCount > 9 ? '9+' : unreadCount}</Text>
+              </View>
+            )}
+          </TouchableOpacity>
+          {/* Admin link */}
+          {user?.role === 'admin' && (
+            <TouchableOpacity onPress={() => router.push('/admin')}>
+              <Ionicons name="settings-outline" size={22} color={theme.colors.textSecondary} />
+            </TouchableOpacity>
+          )}
+          <Badge label={user?.role ?? 'student'} status={user?.role === 'admin' ? 'approved' : 'available'} />
+        </View>
       </View>
 
       {/* Stats Grid */}
@@ -129,6 +148,15 @@ const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: theme.colors.background },
   content: { padding: theme.spacing.lg, paddingTop: 60 },
   header: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 24 },
+  headerRight: { flexDirection: 'row', alignItems: 'center', gap: 12 },
+  bellBtn: { position: 'relative' },
+  bellBadge: {
+    position: 'absolute', top: -4, right: -6,
+    backgroundColor: theme.colors.error, borderRadius: 8,
+    minWidth: 16, height: 16, alignItems: 'center', justifyContent: 'center',
+    paddingHorizontal: 3,
+  },
+  bellBadgeText: { color: '#fff', fontSize: 9, fontWeight: '700' },
   greeting: { color: theme.colors.textMuted, fontSize: theme.fontSize.md },
   name: { color: theme.colors.text, fontSize: theme.fontSize.xxl, fontWeight: theme.fontWeight.bold },
   statsGrid: { flexDirection: 'row', flexWrap: 'wrap', gap: 10, marginBottom: 24 },

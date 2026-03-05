@@ -6,6 +6,7 @@ import { theme } from '@/constants/theme';
 import { Input } from '@/components/ui/Input';
 import { Card } from '@/components/ui/Card';
 import { Badge } from '@/components/ui/Badge';
+import { useVoice } from '@/hooks/useVoice';
 import api from '@/services/api';
 
 export default function SearchScreen() {
@@ -13,6 +14,7 @@ export default function SearchScreen() {
   const [results, setResults] = useState<any[]>([]);
   const [searching, setSearching] = useState(false);
   const [mode, setMode] = useState<'nl' | 'semantic'>('nl');
+  const { isRecording, transcript, startRecording, stopAndSearch } = useVoice();
 
   const handleSearch = async () => {
     if (!query.trim()) return;
@@ -63,11 +65,27 @@ export default function SearchScreen() {
         </TouchableOpacity>
       </View>
 
-      {/* Voice search placeholder */}
-      <TouchableOpacity style={styles.voiceBtn}>
-        <Ionicons name="mic-outline" size={24} color={theme.colors.primary} />
-        <Text style={styles.voiceText}>Voice Search (coming soon)</Text>
+      {/* Voice search */}
+      <TouchableOpacity
+        style={[styles.voiceBtn, isRecording && styles.voiceBtnActive]}
+        onPress={async () => {
+          if (isRecording) {
+            setSearching(true);
+            const voiceResults = await stopAndSearch();
+            setResults(voiceResults);
+            if (transcript) setQuery(transcript);
+            setSearching(false);
+          } else {
+            await startRecording();
+          }
+        }}
+      >
+        <Ionicons name={isRecording ? 'stop-circle' : 'mic-outline'} size={24} color={isRecording ? theme.colors.error : theme.colors.primary} />
+        <Text style={[styles.voiceText, isRecording && { color: theme.colors.error }]}>
+          {isRecording ? 'Listening... Tap to stop' : 'Voice Search (Nova Sonic)'}
+        </Text>
       </TouchableOpacity>
+      {transcript ? <Text style={styles.transcript}>"{transcript}"</Text> : null}
 
       {/* Results */}
       {searching ? (
@@ -122,7 +140,9 @@ const styles = StyleSheet.create({
     borderWidth: 1, borderColor: theme.colors.border, borderStyle: 'dashed',
     marginBottom: 20,
   },
+  voiceBtnActive: { borderColor: theme.colors.error, backgroundColor: theme.colors.error + '10' },
   voiceText: { color: theme.colors.textMuted, fontSize: theme.fontSize.sm },
+  transcript: { color: theme.colors.textSecondary, fontSize: theme.fontSize.sm, fontStyle: 'italic', marginBottom: 12, marginTop: -8 },
   results: { gap: 8 },
   resultCount: { color: theme.colors.textMuted, fontSize: theme.fontSize.sm, marginBottom: 8 },
   resultCard: { marginBottom: 4 },

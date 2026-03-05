@@ -6,6 +6,7 @@ import { theme } from '@/constants/theme';
 import { Card } from '@/components/ui/Card';
 import { Badge } from '@/components/ui/Badge';
 import { Button } from '@/components/ui/Button';
+import { BorrowModal } from '@/components/BorrowModal';
 import { useAuthStore } from '@/stores/auth.store';
 import api from '@/services/api';
 
@@ -13,27 +14,16 @@ export default function ItemDetailScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
   const { user } = useAuthStore();
   const [item, setItem] = useState<any>(null);
-  const [borrowing, setBorrowing] = useState(false);
+  const [showBorrow, setShowBorrow] = useState(false);
 
   useEffect(() => {
     api.get(`/items/${id}`).then(({ data }) => setItem(data)).catch(() => {});
   }, [id]);
 
-  const handleBorrow = async () => {
-    setBorrowing(true);
-    try {
-      await api.post('/borrow', {
-        itemId: id,
-        purpose: 'Academic use',
-        dueAt: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString(),
-      });
-      const { data } = await api.get(`/items/${id}`);
-      setItem(data);
-    } catch (err) {
-      console.error('Borrow failed:', err);
-    } finally {
-      setBorrowing(false);
-    }
+  const refreshItem = async () => {
+    const { data } = await api.get(`/items/${id}`);
+    setItem(data);
+    setShowBorrow(false);
   };
 
   if (!item) {
@@ -106,11 +96,18 @@ export default function ItemDetailScreen() {
       {item.status === 'available' && (
         <Button
           title="Request to Borrow"
-          onPress={handleBorrow}
-          loading={borrowing}
+          onPress={() => setShowBorrow(true)}
           style={{ marginTop: 20 }}
         />
       )}
+
+      <BorrowModal
+        visible={showBorrow}
+        itemId={id!}
+        itemName={item.name}
+        onClose={() => setShowBorrow(false)}
+        onSuccess={refreshItem}
+      />
 
       {(user?.role === 'faculty' || user?.role === 'admin') && (
         <Button

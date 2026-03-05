@@ -3,11 +3,15 @@ import { Stack } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import { View, ActivityIndicator, StyleSheet } from 'react-native';
 import { useAuthStore } from '@/stores/auth.store';
+import { useWebSocket } from '@/hooks/useWebSocket';
 import { theme } from '@/constants/theme';
 import '../src/lib/amplify';
 
 export default function RootLayout() {
   const { initialize, isLoading } = useAuthStore();
+
+  // Connect WebSocket for real-time notifications
+  useWebSocket();
 
   useEffect(() => {
     initialize();

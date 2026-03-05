@@ -1,8 +1,16 @@
 # CampusVault AI
 
-**AI-powered university asset management platform built with Amazon Nova.**
+**Snap. Place. Find. -- AI-powered university asset management built with Amazon Nova.**
 
-Snap. Place. Find. -- Photograph any item, AI identifies it, assign it to a location, search anytime, borrow with approval, return tracked.
+Universities manage thousands of shared assets tracked in spreadsheets that are always out of date. CampusVault AI replaces that with a mobile-first platform where staff photograph any item, AI identifies it instantly, and every borrow is tracked automatically.
+
+---
+
+## Core Loop
+
+```
+Snap photo --> Nova identifies item --> Assign to location --> Search anytime --> Borrow with approval --> Return tracked
+```
 
 ## Tech Stack
 
@@ -15,6 +23,29 @@ Snap. Place. Find. -- Photograph any item, AI identifies it, assign it to a loca
 | Auth | Amazon Cognito (JWT, role-based) |
 | AI | Amazon Bedrock -- Nova Pro, Nova Lite, Nova Sonic, Nova Embeddings, Nova Act |
 | Notifications | Amazon SES + WebSocket (socket.io) |
+
+## Amazon Nova Integration
+
+| Nova Service | Feature |
+|---|---|
+| **Nova Pro** (Multimodal) | Snap-to-Add: photo to item name, brand, category, tags in under 3 seconds |
+| **Nova 2 Lite** | Natural language search: "find projectors in Lab 3" |
+| **Nova 2 Sonic** | Voice search: speak to search inventory hands-free |
+| **Nova Act** | Agentic borrow lifecycle: due-date reminders, overdue escalation, auto-close |
+| **Nova Embeddings** | Semantic search: "camera" also finds "DSLR", "Canon EOS" |
+
+## Features
+
+- **Snap-to-Add** -- Photograph any item; Nova pre-fills name, brand, category, tags. No barcodes.
+- **Place Hierarchy** -- Place > Shelf > Section. Every item knows exactly where it lives.
+- **AI-Overridable** -- AI suggests, humans verify and override. Always in control.
+- **Borrow Workflow** -- Student requests, faculty approves, Nova Act sends reminders automatically.
+- **Voice Search** -- Speak to find any item. Great for faculty carrying equipment.
+- **Semantic Search** -- Intent-aware, not keyword-dependent.
+- **Transfer Flow** -- Reassign items to new locations with full audit trail.
+- **Role-Based Access** -- Admin > Faculty > Student with granular permissions.
+- **Admin Dashboard** -- Real-time stats, pending approvals queue, audit log.
+- **Cross-Platform** -- One Expo codebase for iOS, Android, and web.
 
 ## Repo Structure
 
@@ -33,10 +64,12 @@ campusvault-ai/
 ## Quick Start
 
 ```bash
+# Install all workspace dependencies
 npm install
 
 # Backend
 cp apps/backend/.env.example apps/backend/.env
+# Fill in your AWS credentials and Cognito IDs
 npm run backend:dev
 
 # Frontend (new terminal)
@@ -44,29 +77,21 @@ cp apps/mobile/.env.example apps/mobile/.env
 npm run mobile:web
 ```
 
-See [docs/setup.md](docs/setup.md) for full AWS setup instructions.
+### Demo Mode
+
+Run the frontend without a backend by setting `EXPO_PUBLIC_DEMO_MODE=true` in `apps/mobile/.env`. This uses mock data for places, items, and stats.
 
 ## Documentation
 
-- [Architecture](docs/architecture.md) -- System design, AWS services, security
+- [Architecture](docs/architecture.md) -- System design, AWS services, security model
 - [Features](docs/features.md) -- Complete feature list with permission matrix
-- [Data Model](docs/data-model.md) -- DynamoDB tables, types, access patterns
-- [API Routes](docs/api-routes.md) -- All REST endpoints
-- [Setup Guide](docs/setup.md) -- Prerequisites, AWS config, local dev
-
-## Nova AI Integration
-
-| Nova Service | Feature |
-|---|---|
-| Nova Pro (Multimodal) | Snap-to-Add: camera photo > item name, brand, category, tags |
-| Nova 2 Lite | Natural language search: "find projectors in Lab 3" |
-| Nova 2 Sonic | Voice search: speak to search inventory |
-| Nova Act | Agentic borrow lifecycle: reminders, escalation, auto-close |
-| Nova Embeddings | Semantic search: "camera" finds "DSLR", "Canon EOS" |
+- [Data Model](docs/data-model.md) -- DynamoDB tables, schemas, access patterns
+- [API Routes](docs/api-routes.md) -- All REST endpoints with request/response
+- [Setup Guide](docs/setup.md) -- AWS prerequisites, Cognito, DynamoDB, S3 setup
 
 ## Branding
 
-White-label ready. Default brand: **Indiana Tech**. Modify `assets/branding/config.ts` to rebrand for any campus.
+White-label ready. Default brand: **Indiana Tech**. Modify `assets/branding/config.ts` and `apps/mobile/src/constants/theme.ts` to rebrand for any campus.
 
 ## License
 
