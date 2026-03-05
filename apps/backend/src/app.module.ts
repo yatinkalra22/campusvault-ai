@@ -5,6 +5,8 @@ import { DynamoModule } from './dynamo/dynamo.module.js';
 import { AuthModule } from './auth/auth.module.js';
 import { PlacesModule } from './places/places.module.js';
 import { ShelvesModule } from './shelves/shelves.module.js';
+import { NovaModule } from './nova/nova.module.js';
+import { ItemsModule } from './items/items.module.js';
 
 @Module({
   imports: [
@@ -12,8 +14,10 @@ import { ShelvesModule } from './shelves/shelves.module.js';
     ScheduleModule.forRoot(),
     DynamoModule,
     AuthModule,
+    NovaModule,
     PlacesModule,
     ShelvesModule,
+    ItemsModule,
   ],
 })
 export class AppModule {}
