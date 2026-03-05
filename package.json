@@ -1,0 +1,27 @@
+{
+  "name": "campusvault-ai",
+  "version": "1.0.0",
+  "private": true,
+  "description": "AI-powered university asset management platform built with Amazon Nova",
+  "workspaces": [
+    "packages/*",
+    "apps/*"
+  ],
+  "scripts": {
+    "backend:dev": "npm run start:dev --workspace=apps/backend",
+    "mobile:start": "npm run start --workspace=apps/mobile",
+    "mobile:web": "npm run web --workspace=apps/mobile",
+    "lint": "prettier --check .",
+    "format": "prettier --write ."
+  },
+  "keywords": [
+    "amazon-nova",
+    "university",
+    "asset-management",
+    "ai",
+    "expo",
+    "nestjs"
+  ],
+  "author": "Yatin Kalra",
+  "license": "MIT"
+}
