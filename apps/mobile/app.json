@@ -1,0 +1,51 @@
+{
+  "expo": {
+    "name": "CampusVault AI",
+    "slug": "campusvault-ai",
+    "version": "1.0.0",
+    "scheme": "campusvault",
+    "orientation": "portrait",
+    "icon": "./assets/icon.png",
+    "userInterfaceStyle": "dark",
+    "splash": {
+      "image": "./assets/splash-icon.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#0f0f1a"
+    },
+    "ios": {
+      "bundleIdentifier": "edu.indianatech.campusvault",
+      "supportsTablet": true
+    },
+    "android": {
+      "package": "edu.indianatech.campusvault",
+      "adaptiveIcon": {
+        "backgroundColor": "#0f0f1a",
+        "foregroundImage": "./assets/android-icon-foreground.png",
+        "backgroundImage": "./assets/android-icon-background.png",
+        "monochromeImage": "./assets/android-icon-monochrome.png"
+      }
+    },
+    "web": {
+      "bundler": "metro",
+      "output": "static",
+      "favicon": "./assets/favicon.png"
+    },
+    "plugins": [
+      "expo-router",
+      "expo-secure-store",
+      "expo-font",
+      [
+        "expo-camera",
+        { "cameraPermission": "CampusVault needs camera access to identify and photograph items." }
+      ],
+      [
+        "expo-image-picker",
+        { "photosPermission": "CampusVault needs photo library access." }
+      ],
+      [
+        "expo-av",
+        { "microphonePermission": "CampusVault needs microphone access for voice search." }
+      ]
+    ]
+  }
+}
