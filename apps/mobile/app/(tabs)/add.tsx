@@ -1,4 +1,4 @@
-import { useState, useRef } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { View, Text, StyleSheet, ScrollView, Image, TouchableOpacity, Platform, ActivityIndicator } from 'react-native';
 import { CameraView, useCameraPermissions } from 'expo-camera';
 import * as ImagePicker from 'expo-image-picker';
@@ -8,6 +8,10 @@ import { theme } from '@/constants/theme';
 import { Button } from '@/components/ui/Button';
 import { Input } from '@/components/ui/Input';
 import { Card } from '@/components/ui/Card';
+import { NovaBadge } from '@/components/NovaBadge';
+import { ScanOverlay } from '@/components/ScanOverlay';
+import { DEMO_MODE } from '@/lib/demo';
+import { MOCK_PLACES, MOCK_SHELVES } from '@/mock';
 import api from '@/services/api';
 
 export default function AddItemScreen() {
@@ -24,7 +28,24 @@ export default function AddItemScreen() {
   const [category, setCategory] = useState('');
   const [tags, setTags] = useState('');
   const [placeId, setPlaceId] = useState('');
+  const [shelfId, setShelfId] = useState('');
   const [notes, setNotes] = useState('');
+
+  // Place/shelf picker data
+  const [places, setPlaces] = useState<any[]>([]);
+  const [shelves, setShelves] = useState<any[]>([]);
+
+  useEffect(() => {
+    if (DEMO_MODE) { setPlaces(MOCK_PLACES); return; }
+    api.get('/places').then(({ data }) => setPlaces(data)).catch(() => {});
+  }, []);
+
+  useEffect(() => {
+    if (!placeId) { setShelves([]); setShelfId(''); return; }
+    if (DEMO_MODE) { setShelves(MOCK_SHELVES.filter((s) => s.placeId === placeId)); return; }
+    api.get(`/shelves?placeId=${placeId}`).then(({ data }) => setShelves(data)).catch(() => {});
+    setShelfId('');
+  }, [placeId]);
   const [submitting, setSubmitting] = useState(false);
 
   const capturePhoto = async () => {
@@ -90,6 +111,7 @@ export default function AddItemScreen() {
         name, brandName, category,
         tags: tags.split(',').map((t) => t.trim()).filter(Boolean),
         placeId: placeId || undefined,
+        shelfId: shelfId || undefined,
         notes: notes || undefined,
         imageKeys,
       });
@@ -146,24 +168,23 @@ export default function AddItemScreen() {
   // Image captured — show AI result + form
   return (
     <ScrollView style={styles.container} contentContainerStyle={styles.formContent}>
-      <Image source={{ uri: capturedImage }} style={styles.preview} />
+      <View style={{ position: 'relative' }}>
+        <Image source={{ uri: capturedImage }} style={styles.preview} />
+        {analyzing && <ScanOverlay />}
+      </View>
       <TouchableOpacity style={styles.retakeBtn} onPress={() => { setCapturedImage(null); setAiResult(null); }}>
         <Ionicons name="refresh" size={16} color={theme.colors.primary} />
         <Text style={styles.retakeText}>Retake</Text>
       </TouchableOpacity>
 
       {/* AI Analysis Result */}
-      {analyzing ? (
-        <Card style={styles.aiCard}>
-          <ActivityIndicator color={theme.colors.primary} />
-          <Text style={styles.aiText}>Nova AI is analyzing your image...</Text>
-        </Card>
-      ) : aiResult ? (
+      {analyzing ? null : aiResult ? (
         <Card style={styles.aiCard}>
           <Ionicons name="sparkles" size={20} color={theme.colors.primary} />
           <Text style={styles.aiText}>
             Identified: {aiResult.name} ({Math.round((aiResult.confidence ?? 0) * 100)}% confidence)
           </Text>
+          <NovaBadge compact />
         </Card>
       ) : null}
 
@@ -174,7 +195,40 @@ export default function AddItemScreen() {
           <Input label="Brand" value={brandName} onChangeText={setBrandName} placeholder="e.g. Canon" />
           <Input label="Category *" value={category} onChangeText={setCategory} placeholder="e.g. electronics" />
           <Input label="Tags (comma separated)" value={tags} onChangeText={setTags} placeholder="e.g. camera, dslr" />
-          <Input label="Place ID" value={placeId} onChangeText={setPlaceId} placeholder="Select a location" />
+
+          {/* Place picker */}
+          <Text style={styles.pickerLabel}>Location *</Text>
+          <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.pickerScroll}>
+            {places.map((p) => (
+              <TouchableOpacity
+                key={p.id}
+                style={[styles.pickerChip, placeId === p.id && styles.pickerChipActive]}
+                onPress={() => setPlaceId(p.id)}
+              >
+                <Ionicons name="location" size={14} color={placeId === p.id ? '#fff' : theme.colors.primary} />
+                <Text style={[styles.pickerChipText, placeId === p.id && styles.pickerChipTextActive]}>{p.name}</Text>
+              </TouchableOpacity>
+            ))}
+          </ScrollView>
+
+          {/* Shelf picker — appears after place is selected */}
+          {shelves.length > 0 && (
+            <>
+              <Text style={styles.pickerLabel}>Shelf</Text>
+              <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.pickerScroll}>
+                {shelves.map((s) => (
+                  <TouchableOpacity
+                    key={s.id}
+                    style={[styles.pickerChip, shelfId === s.id && styles.pickerChipActive]}
+                    onPress={() => setShelfId(s.id)}
+                  >
+                    <Text style={[styles.pickerChipText, shelfId === s.id && styles.pickerChipTextActive]}>{s.name}</Text>
+                  </TouchableOpacity>
+                ))}
+              </ScrollView>
+            </>
+          )}
+
           <Input label="Notes" value={notes} onChangeText={setNotes} placeholder="Optional notes" multiline />
 
           <Button title="Add to Inventory" onPress={handleSubmit} loading={submitting} disabled={!name || !category} />
@@ -218,4 +272,17 @@ const styles = StyleSheet.create({
   aiCard: { flexDirection: 'row', alignItems: 'center', gap: 10, marginBottom: 16 },
   aiText: { color: theme.colors.textSecondary, fontSize: theme.fontSize.sm, flex: 1 },
   form: { gap: 14 },
+  pickerLabel: { color: theme.colors.textSecondary, fontSize: theme.fontSize.sm, fontWeight: '600', marginBottom: 4 },
+  pickerScroll: { marginBottom: 4 },
+  pickerChip: {
+    flexDirection: 'row', alignItems: 'center', gap: 6,
+    paddingHorizontal: 14, paddingVertical: 8,
+    borderRadius: theme.radius.full,
+    backgroundColor: theme.colors.surfaceAlt,
+    marginRight: 8,
+    borderWidth: 1, borderColor: theme.colors.border,
+  },
+  pickerChipActive: { backgroundColor: theme.colors.primary, borderColor: theme.colors.primary },
+  pickerChipText: { color: theme.colors.textSecondary, fontSize: theme.fontSize.sm, fontWeight: '600' },
+  pickerChipTextActive: { color: '#fff' },
 });

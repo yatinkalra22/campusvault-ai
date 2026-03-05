@@ -1,6 +1,8 @@
 import { create } from 'zustand';
 import { signIn, signUp, signOut, getCurrentUser, fetchAuthSession, confirmSignUp } from 'aws-amplify/auth';
 import { router } from 'expo-router';
+import { DEMO_MODE } from '@/lib/demo';
+import { MOCK_USER } from '@/mock';
 
 interface User {
   id: string;
@@ -31,6 +33,11 @@ export const useAuthStore = create<AuthState>((set) => ({
   error: null,
 
   initialize: async () => {
+    if (DEMO_MODE) {
+      set({ user: MOCK_USER, token: 'demo-token', isAuthenticated: true, isLoading: false });
+      router.replace('/(tabs)');
+      return;
+    }
     try {
       const session = await fetchAuthSession();
       const cognitoUser = await getCurrentUser();

@@ -7,6 +7,9 @@ import { Card } from '@/components/ui/Card';
 import { Badge } from '@/components/ui/Badge';
 import { useAuthStore } from '@/stores/auth.store';
 import { useNotificationsStore } from '@/stores/notifications.store';
+import { NovaBadge } from '@/components/NovaBadge';
+import { DEMO_MODE } from '@/lib/demo';
+import { MOCK_ITEMS, MOCK_PLACES } from '@/mock';
 import api from '@/services/api';
 
 interface DashboardStats {
@@ -25,6 +28,18 @@ export default function HomeScreen() {
   const [refreshing, setRefreshing] = useState(false);
 
   const loadData = async () => {
+    if (DEMO_MODE) {
+      const items = MOCK_ITEMS;
+      setStats({
+        totalItems: items.length,
+        availableItems: items.filter((i) => i.status === 'available').length,
+        borrowedItems: items.filter((i) => i.status === 'borrowed').length,
+        overdueItems: 0,
+        totalPlaces: MOCK_PLACES.length,
+      });
+      setRecentItems(items.slice(0, 5));
+      return;
+    }
     try {
       const [itemsRes, placesRes] = await Promise.all([
         api.get('/items'),
@@ -98,6 +113,8 @@ export default function HomeScreen() {
         <ActionButton icon="search-outline" label="Search" onPress={() => router.push('/(tabs)/search')} />
         <ActionButton icon="grid-outline" label="Explore" onPress={() => router.push('/(tabs)/explore')} />
       </View>
+
+      <NovaBadge />
 
       {/* Recent Items */}
       <Text style={styles.sectionTitle}>Recent Items</Text>

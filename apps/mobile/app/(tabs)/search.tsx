@@ -7,6 +7,9 @@ import { Input } from '@/components/ui/Input';
 import { Card } from '@/components/ui/Card';
 import { Badge } from '@/components/ui/Badge';
 import { useVoice } from '@/hooks/useVoice';
+import { NovaBadge } from '@/components/NovaBadge';
+import { DEMO_MODE } from '@/lib/demo';
+import { MOCK_ITEMS } from '@/mock';
 import api from '@/services/api';
 
 export default function SearchScreen() {
@@ -19,6 +22,19 @@ export default function SearchScreen() {
   const handleSearch = async () => {
     if (!query.trim()) return;
     setSearching(true);
+    if (DEMO_MODE) {
+      const q = query.toLowerCase();
+      const filtered = MOCK_ITEMS.filter((i) =>
+        i.name.toLowerCase().includes(q) ||
+        i.brandName.toLowerCase().includes(q) ||
+        i.category.includes(q) ||
+        i.tags.some((t) => t.includes(q)) ||
+        i.placeName.toLowerCase().includes(q)
+      );
+      setResults(filtered);
+      setSearching(false);
+      return;
+    }
     try {
       const { data } = await api.get('/search', { params: { q: query, mode } });
       setResults(Array.isArray(data) ? data : []);
@@ -33,6 +49,7 @@ export default function SearchScreen() {
     <ScrollView style={styles.container} contentContainerStyle={styles.content}>
       <Text style={styles.title}>Search Inventory</Text>
       <Text style={styles.subtitle}>Find items using natural language or voice</Text>
+      <NovaBadge label="Powered by Nova Lite + Nova Sonic" />
 
       <View style={styles.searchRow}>
         <View style={{ flex: 1 }}>

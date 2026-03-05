@@ -4,6 +4,8 @@ import { router } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { theme } from '@/constants/theme';
 import { Card } from '@/components/ui/Card';
+import { DEMO_MODE } from '@/lib/demo';
+import { MOCK_PLACES } from '@/mock';
 import api from '@/services/api';
 
 export default function ExploreScreen() {
@@ -11,6 +13,7 @@ export default function ExploreScreen() {
   const [refreshing, setRefreshing] = useState(false);
 
   const loadPlaces = async () => {
+    if (DEMO_MODE) { setPlaces(MOCK_PLACES); return; }
     try {
       const { data } = await api.get('/places');
       setPlaces(data);

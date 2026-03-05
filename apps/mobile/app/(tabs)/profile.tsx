@@ -6,6 +6,8 @@ import { Card } from '@/components/ui/Card';
 import { Badge } from '@/components/ui/Badge';
 import { Button } from '@/components/ui/Button';
 import { useAuthStore } from '@/stores/auth.store';
+import { DEMO_MODE } from '@/lib/demo';
+import { MOCK_BORROWS } from '@/mock';
 import api from '@/services/api';
 
 export default function ProfileScreen() {
@@ -13,6 +15,7 @@ export default function ProfileScreen() {
   const [borrows, setBorrows] = useState<any[]>([]);
 
   useEffect(() => {
+    if (DEMO_MODE) { setBorrows(MOCK_BORROWS); return; }
     api.get('/borrow/my').then(({ data }) => setBorrows(data)).catch(() => {});
   }, []);
 

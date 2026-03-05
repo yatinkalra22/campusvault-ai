@@ -5,6 +5,8 @@ import { Ionicons } from '@expo/vector-icons';
 import { theme } from '@/constants/theme';
 import { Card } from '@/components/ui/Card';
 import { Badge } from '@/components/ui/Badge';
+import { DEMO_MODE } from '@/lib/demo';
+import { MOCK_PLACES, MOCK_SHELVES, MOCK_ITEMS } from '@/mock';
 import api from '@/services/api';
 
 export default function PlaceDetailScreen() {
@@ -14,6 +16,12 @@ export default function PlaceDetailScreen() {
   const [items, setItems] = useState<any[]>([]);
 
   useEffect(() => {
+    if (DEMO_MODE) {
+      setPlace(MOCK_PLACES.find((p) => p.id === id) ?? null);
+      setShelves(MOCK_SHELVES.filter((s) => s.placeId === id));
+      setItems(MOCK_ITEMS.filter((i) => i.placeId === id));
+      return;
+    }
     Promise.all([
       api.get(`/places/${id}`),
       api.get(`/shelves?placeId=${id}`),

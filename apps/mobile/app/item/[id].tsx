@@ -7,7 +7,10 @@ import { Card } from '@/components/ui/Card';
 import { Badge } from '@/components/ui/Badge';
 import { Button } from '@/components/ui/Button';
 import { BorrowModal } from '@/components/BorrowModal';
+import { NovaBadge } from '@/components/NovaBadge';
 import { useAuthStore } from '@/stores/auth.store';
+import { DEMO_MODE } from '@/lib/demo';
+import { MOCK_ITEMS } from '@/mock';
 import api from '@/services/api';
 
 export default function ItemDetailScreen() {
@@ -17,10 +20,12 @@ export default function ItemDetailScreen() {
   const [showBorrow, setShowBorrow] = useState(false);
 
   useEffect(() => {
+    if (DEMO_MODE) { setItem(MOCK_ITEMS.find((i) => i.id === id) ?? null); return; }
     api.get(`/items/${id}`).then(({ data }) => setItem(data)).catch(() => {});
   }, [id]);
 
   const refreshItem = async () => {
+    if (DEMO_MODE) { setShowBorrow(false); return; }
     const { data } = await api.get(`/items/${id}`);
     setItem(data);
     setShowBorrow(false);
@@ -131,6 +136,7 @@ export default function ItemDetailScreen() {
           {item.aiAnalysis.wasOverridden && (
             <Text style={styles.aiOverride}>Manually overridden by user</Text>
           )}
+          <NovaBadge compact />
         </Card>
       )}
     </ScrollView>

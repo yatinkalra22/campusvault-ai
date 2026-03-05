@@ -1,7 +1,8 @@
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { Stack } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import { View, ActivityIndicator, StyleSheet } from 'react-native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useAuthStore } from '@/stores/auth.store';
 import { useWebSocket } from '@/hooks/useWebSocket';
 import { theme } from '@/constants/theme';
@@ -9,15 +10,20 @@ import '../src/lib/amplify';
 
 export default function RootLayout() {
   const { initialize, isLoading } = useAuthStore();
+  const [checkingOnboarding, setCheckingOnboarding] = useState(true);
 
-  // Connect WebSocket for real-time notifications
   useWebSocket();
 
   useEffect(() => {
-    initialize();
+    (async () => {
+      const done = await AsyncStorage.getItem('onboarding_done');
+      setCheckingOnboarding(false);
+      if (!done) return; // onboarding screen will show as initial route
+      initialize();
+    })();
   }, []);
 
-  if (isLoading) {
+  if (checkingOnboarding || isLoading) {
     return (
       <View style={styles.loading}>
         <ActivityIndicator size="large" color={theme.colors.primary} />
@@ -35,6 +41,7 @@ export default function RootLayout() {
           animation: 'slide_from_right',
         }}
       >
+        <Stack.Screen name="onboarding" />
         <Stack.Screen name="(auth)" />
         <Stack.Screen name="(tabs)" />
         <Stack.Screen name="item/[id]" options={{ presentation: 'modal' }} />

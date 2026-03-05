@@ -6,6 +6,8 @@ import { theme } from '@/constants/theme';
 import { Card } from '@/components/ui/Card';
 import { Badge } from '@/components/ui/Badge';
 import { Button } from '@/components/ui/Button';
+import { DEMO_MODE } from '@/lib/demo';
+import { MOCK_ITEMS, MOCK_PLACES, MOCK_BORROWS } from '@/mock';
 import api from '@/services/api';
 
 export default function AdminDashboard() {
@@ -15,6 +17,22 @@ export default function AdminDashboard() {
   const [refreshing, setRefreshing] = useState(false);
 
   const loadData = async () => {
+    if (DEMO_MODE) {
+      const items = MOCK_ITEMS;
+      const pendingBorrows = MOCK_BORROWS.filter((b) => b.status === 'pending');
+      setStats({
+        totalItems: items.length,
+        available: items.filter((i) => i.status === 'available').length,
+        borrowed: items.filter((i) => i.status === 'borrowed').length,
+        overdue: 0,
+        maintenance: 0,
+        places: MOCK_PLACES.length,
+        pendingCount: pendingBorrows.length,
+      });
+      setPending(pendingBorrows);
+      setRecentItems(items.slice(0, 5));
+      return;
+    }
     try {
       const [itemsRes, placesRes, pendingRes] = await Promise.all([
         api.get('/items'),
