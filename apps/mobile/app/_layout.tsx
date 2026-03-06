@@ -1,7 +1,8 @@
 import { useEffect, useState } from 'react';
 import { Stack } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
-import { View, ActivityIndicator, StyleSheet } from 'react-native';
+import { View, Text, ActivityIndicator, StyleSheet } from 'react-native';
+import { Ionicons } from '@expo/vector-icons';
 import Toast from 'react-native-toast-message';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useAuthStore } from '@/stores/auth.store';
@@ -29,7 +30,12 @@ export default function RootLayout() {
   if (checkingOnboarding || isLoading) {
     return (
       <View style={styles.loading}>
-        <ActivityIndicator size="large" color={theme.colors.primary} />
+        <View style={styles.splashIcon}>
+          <Ionicons name="cube" size={48} color={theme.colors.primary} />
+        </View>
+        <Text style={styles.splashTitle}>CampusVault AI</Text>
+        <Text style={styles.splashSub}>Snap. Place. Find.</Text>
+        <ActivityIndicator size="small" color={theme.colors.primary} style={{ marginTop: 24 }} />
         <StatusBar style="light" />
       </View>
     );
@@ -62,5 +68,18 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     backgroundColor: theme.colors.background,
+  },
+  splashIcon: {
+    width: 88, height: 88, borderRadius: 22,
+    backgroundColor: theme.colors.primary + '18',
+    alignItems: 'center', justifyContent: 'center',
+    marginBottom: 16,
+  },
+  splashTitle: {
+    color: theme.colors.text, fontSize: 28, fontWeight: '800',
+    letterSpacing: -0.5,
+  },
+  splashSub: {
+    color: theme.colors.textMuted, fontSize: 15, marginTop: 4,
   },
 });

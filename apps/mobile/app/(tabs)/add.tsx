@@ -12,7 +12,7 @@ import { NovaBadge } from '@/components/NovaBadge';
 import { ScanOverlay } from '@/components/ScanOverlay';
 import { showSuccess, showError } from '@/lib/toast';
 import { DEMO_MODE } from '@/lib/demo';
-import { MOCK_PLACES, MOCK_SHELVES } from '@/mock';
+import { MOCK_PLACES, MOCK_SHELVES, getMockAnalysis } from '@/mock';
 import api from '@/services/api';
 
 export default function AddItemScreen() {
@@ -81,7 +81,9 @@ export default function AddItemScreen() {
     setImageBase64(base64);
     setAnalyzing(true);
     try {
-      const { data } = await api.post('/items/analyze-image', { imageBase64: base64 });
+      const data = DEMO_MODE
+        ? await getMockAnalysis()
+        : (await api.post('/items/analyze-image', { imageBase64: base64 })).data;
       setAiResult(data);
       setName(data.name ?? '');
       setBrandName(data.brandName ?? '');

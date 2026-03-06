@@ -3,6 +3,8 @@ import { View, Text, StyleSheet, Dimensions, TouchableOpacity } from 'react-nati
 import { router } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { theme } from '@/constants/theme';
+import { DEMO_MODE } from '@/lib/demo';
+import { useAuthStore } from '@/stores/auth.store';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const { width } = Dimensions.get('window');
@@ -34,18 +36,26 @@ const SLIDES = [
 export default function OnboardingScreen() {
   const [step, setStep] = useState(0);
 
-  const handleNext = async () => {
-    if (step < SLIDES.length - 1) {
-      setStep(step + 1);
+  const finishOnboarding = async () => {
+    await AsyncStorage.setItem('onboarding_done', 'true');
+    if (DEMO_MODE) {
+      // Skip login entirely in demo mode
+      useAuthStore.getState().initialize();
     } else {
-      await AsyncStorage.setItem('onboarding_done', 'true');
       router.replace('/(auth)/login');
     }
   };
 
+  const handleNext = async () => {
+    if (step < SLIDES.length - 1) {
+      setStep(step + 1);
+    } else {
+      await finishOnboarding();
+    }
+  };
+
   const handleSkip = async () => {
-    await AsyncStorage.setItem('onboarding_done', 'true');
-    router.replace('/(auth)/login');
+    await finishOnboarding();
   };
 
   const slide = SLIDES[step];

@@ -4,3 +4,4 @@ export { MOCK_SHELVES } from './shelves';
 export { MOCK_BORROWS } from './borrows';
 export { MOCK_STATS } from './stats';
 export { MOCK_USER } from './user';
+export { getMockAnalysis } from './aiAnalysis';
