@@ -3,6 +3,7 @@ import { View, Text, StyleSheet, Modal, TouchableOpacity, KeyboardAvoidingView, 
 import { theme } from '@/constants/theme';
 import { Button } from './ui/Button';
 import { Input } from './ui/Input';
+import { showSuccess, showError } from '@/lib/toast';
 import api from '@/services/api';
 
 interface BorrowModalProps {
@@ -35,9 +36,12 @@ export function BorrowModal({ visible, itemId, itemName, onClose, onSuccess }: B
       });
       setPurpose('');
       setDaysUntilDue('7');
+      showSuccess('Request Sent', 'Your borrow request is pending approval');
       onSuccess();
     } catch (err: any) {
-      setError(err.response?.data?.message ?? 'Request failed');
+      const msg = err.response?.data?.message ?? 'Request failed';
+      setError(msg);
+      showError('Borrow Failed', msg);
     } finally {
       setSubmitting(false);
     }

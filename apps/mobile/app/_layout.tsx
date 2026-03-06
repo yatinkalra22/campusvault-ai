@@ -2,9 +2,12 @@ import { useEffect, useState } from 'react';
 import { Stack } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import { View, ActivityIndicator, StyleSheet } from 'react-native';
+import Toast from 'react-native-toast-message';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useAuthStore } from '@/stores/auth.store';
 import { useWebSocket } from '@/hooks/useWebSocket';
+import { ErrorBoundary } from '@/components/ErrorBoundary';
+import { toastConfig } from '@/lib/toastConfig';
 import { theme } from '@/constants/theme';
 import '../src/lib/amplify';
 
@@ -33,7 +36,7 @@ export default function RootLayout() {
   }
 
   return (
-    <>
+    <ErrorBoundary>
       <Stack
         screenOptions={{
           headerShown: false,
@@ -47,8 +50,9 @@ export default function RootLayout() {
         <Stack.Screen name="item/[id]" options={{ presentation: 'modal' }} />
         <Stack.Screen name="place/[id]" options={{ presentation: 'modal' }} />
       </Stack>
+      <Toast config={toastConfig} />
       <StatusBar style="light" />
-    </>
+    </ErrorBoundary>
   );
 }
 

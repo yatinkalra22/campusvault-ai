@@ -6,6 +6,8 @@ import { theme } from '@/constants/theme';
 import { Card } from '@/components/ui/Card';
 import { Badge } from '@/components/ui/Badge';
 import { Button } from '@/components/ui/Button';
+import { AnimatedNumber } from '@/components/AnimatedNumber';
+import { showSuccess, showError, showInfo } from '@/lib/toast';
 import { DEMO_MODE } from '@/lib/demo';
 import { MOCK_ITEMS, MOCK_PLACES, MOCK_BORROWS } from '@/mock';
 import api from '@/services/api';
@@ -67,18 +69,20 @@ export default function AdminDashboard() {
   const handleApprove = async (id: string) => {
     try {
       await api.put(`/borrow/${id}/approve`);
+      showSuccess('Approved', 'Borrow request has been approved');
       await loadData();
     } catch (err) {
-      console.error('Approve failed:', err);
+      showError('Failed', 'Could not approve request');
     }
   };
 
   const handleReject = async (id: string) => {
     try {
       await api.put(`/borrow/${id}/reject`, { reason: 'Declined by admin' });
+      showSuccess('Rejected', 'Borrow request has been declined');
       await loadData();
     } catch (err) {
-      console.error('Reject failed:', err);
+      showError('Failed', 'Could not reject request');
     }
   };
 
@@ -92,7 +96,24 @@ export default function AdminDashboard() {
         <Ionicons name="arrow-back" size={24} color={theme.colors.text} />
       </TouchableOpacity>
 
-      <Text style={styles.title}>Admin Dashboard</Text>
+      <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 20 }}>
+        <Text style={styles.title}>Admin Dashboard</Text>
+        <TouchableOpacity
+          style={{ flexDirection: 'row', alignItems: 'center', gap: 4, backgroundColor: theme.colors.surfaceAlt, paddingHorizontal: 12, paddingVertical: 6, borderRadius: theme.radius.full }}
+          onPress={async () => {
+            if (DEMO_MODE) { showInfo('Demo Mode', 'CSV export requires a backend connection'); return; }
+            try {
+              const { data } = await api.get('/items/export/csv', { responseType: 'text' });
+              showSuccess('Exported', `${data.split('\n').length - 1} items exported`);
+            } catch {
+              showError('Export Failed', 'Could not generate CSV');
+            }
+          }}
+        >
+          <Ionicons name="download-outline" size={16} color={theme.colors.primary} />
+          <Text style={{ color: theme.colors.primary, fontSize: theme.fontSize.sm, fontWeight: '600' }}>Export CSV</Text>
+        </TouchableOpacity>
+      </View>
 
       {/* Stats Overview */}
       <View style={styles.statsGrid}>
@@ -167,7 +188,7 @@ function StatTile({ label, value, color, icon }: { label: string; value: number;
   return (
     <Card style={styles.statTile}>
       <Ionicons name={icon as any} size={20} color={color} />
-      <Text style={[styles.statValue, { color }]}>{value}</Text>
+      <AnimatedNumber value={value} style={[styles.statValue, { color }]} />
       <Text style={styles.statLabel}>{label}</Text>
     </Card>
   );
@@ -186,7 +207,7 @@ const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: theme.colors.background },
   content: { padding: theme.spacing.lg, paddingTop: 50 },
   backBtn: { marginBottom: 12 },
-  title: { color: theme.colors.text, fontSize: theme.fontSize.xxl, fontWeight: theme.fontWeight.bold, marginBottom: 20 },
+  title: { color: theme.colors.text, fontSize: theme.fontSize.xxl, fontWeight: theme.fontWeight.bold },
   statsGrid: { flexDirection: 'row', flexWrap: 'wrap', gap: 10, marginBottom: 20 },
   statTile: { width: '30%', flexGrow: 1, alignItems: 'center', gap: 4, padding: 12 },
   statValue: { fontSize: theme.fontSize.xl, fontWeight: theme.fontWeight.bold },

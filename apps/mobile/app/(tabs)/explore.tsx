@@ -4,12 +4,13 @@ import { router } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { theme } from '@/constants/theme';
 import { Card } from '@/components/ui/Card';
+import { SkeletonList } from '@/components/SkeletonList';
 import { DEMO_MODE } from '@/lib/demo';
 import { MOCK_PLACES } from '@/mock';
 import api from '@/services/api';
 
 export default function ExploreScreen() {
-  const [places, setPlaces] = useState<any[]>([]);
+  const [places, setPlaces] = useState<any[] | null>(null);
   const [refreshing, setRefreshing] = useState(false);
 
   const loadPlaces = async () => {
@@ -40,7 +41,9 @@ export default function ExploreScreen() {
       <Text style={styles.subtitle}>Browse locations and their inventory</Text>
 
       <View style={styles.grid}>
-        {places.length === 0 ? (
+        {places === null ? (
+          <SkeletonList count={4} />
+        ) : places.length === 0 ? (
           <Card><Text style={styles.empty}>No places yet. Ask an admin to create locations.</Text></Card>
         ) : (
           places.map((place) => (

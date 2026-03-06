@@ -1,7 +1,8 @@
 import {
   Controller, Get, Post, Put, Delete,
-  Param, Body, UseGuards, Query, Request,
+  Param, Body, UseGuards, Query, Request, Res, Header,
 } from '@nestjs/common';
+import type { Response } from 'express';
 import { ApiTags, ApiBearerAuth } from '@nestjs/swagger';
 import { CognitoAuthGuard } from '../auth/cognito.guard.js';
 import { RolesGuard } from '../auth/roles.guard.js';
@@ -67,5 +68,19 @@ export class ItemsController {
   @UseGuards(RolesGuard)
   remove(@Param('id') id: string) {
     return this.itemsService.remove(id);
+  }
+
+  @Get('export/csv')
+  @Roles('admin')
+  @UseGuards(RolesGuard)
+  @Header('Content-Type', 'text/csv')
+  @Header('Content-Disposition', 'attachment; filename="campusvault-items.csv"')
+  async exportCsv(@Res() res: Response) {
+    const items = await this.itemsService.findAll({});
+    const headers = ['id', 'name', 'brandName', 'category', 'status', 'placeName', 'shelfName', 'condition', 'addedAt'];
+    const rows = items.map((item: any) =>
+      headers.map((h) => `"${String(item[h] ?? '').replace(/"/g, '""')}"`).join(',')
+    );
+    res.send([headers.join(','), ...rows].join('\n'));
   }
 }

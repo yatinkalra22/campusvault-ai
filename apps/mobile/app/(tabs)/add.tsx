@@ -10,6 +10,7 @@ import { Input } from '@/components/ui/Input';
 import { Card } from '@/components/ui/Card';
 import { NovaBadge } from '@/components/NovaBadge';
 import { ScanOverlay } from '@/components/ScanOverlay';
+import { showSuccess, showError } from '@/lib/toast';
 import { DEMO_MODE } from '@/lib/demo';
 import { MOCK_PLACES, MOCK_SHELVES } from '@/mock';
 import api from '@/services/api';
@@ -115,9 +116,10 @@ export default function AddItemScreen() {
         notes: notes || undefined,
         imageKeys,
       });
+      showSuccess('Item Added', `${name} has been added to inventory`);
       router.replace('/(tabs)');
     } catch (err) {
-      console.error('Failed to create item:', err);
+      showError('Failed to Add', 'Could not save item. Please try again.');
     } finally {
       setSubmitting(false);
     }

@@ -2,6 +2,7 @@ import { View, Text, StyleSheet, TouchableOpacity, Image } from 'react-native';
 import { router } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { theme } from '@/constants/theme';
+import { getCategoryConfig } from '@/constants/categories';
 import { Badge } from './ui/Badge';
 
 interface ItemCardProps {
@@ -17,6 +18,7 @@ interface ItemCardProps {
 }
 
 export function ItemCard({ item }: ItemCardProps) {
+  const cat = getCategoryConfig(item.category);
   return (
     <TouchableOpacity
       style={styles.card}
@@ -26,8 +28,8 @@ export function ItemCard({ item }: ItemCardProps) {
       {item.imageUrls?.[0] ? (
         <Image source={{ uri: item.imageUrls[0] }} style={styles.image} />
       ) : (
-        <View style={styles.imagePlaceholder}>
-          <Ionicons name="cube-outline" size={24} color={theme.colors.textDim} />
+        <View style={[styles.imagePlaceholder, { backgroundColor: cat.color + '18' }]}>
+          <Ionicons name={cat.icon as any} size={28} color={cat.color} />
         </View>
       )}
       <View style={styles.info}>

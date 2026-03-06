@@ -8,6 +8,8 @@ import { Badge } from '@/components/ui/Badge';
 import { useAuthStore } from '@/stores/auth.store';
 import { useNotificationsStore } from '@/stores/notifications.store';
 import { NovaBadge } from '@/components/NovaBadge';
+import { AnimatedNumber } from '@/components/AnimatedNumber';
+import { SkeletonStats, SkeletonList } from '@/components/SkeletonList';
 import { DEMO_MODE } from '@/lib/demo';
 import { MOCK_ITEMS, MOCK_PLACES } from '@/mock';
 import api from '@/services/api';
@@ -99,12 +101,14 @@ export default function HomeScreen() {
       </View>
 
       {/* Stats Grid */}
-      <View style={styles.statsGrid}>
-        <StatCard label="Total Items" value={stats?.totalItems ?? 0} icon="cube-outline" color={theme.colors.primary} />
-        <StatCard label="Available" value={stats?.availableItems ?? 0} icon="checkmark-circle-outline" color={theme.colors.available} />
-        <StatCard label="Borrowed" value={stats?.borrowedItems ?? 0} icon="arrow-forward-circle-outline" color={theme.colors.borrowed} />
-        <StatCard label="Places" value={stats?.totalPlaces ?? 0} icon="location-outline" color={theme.colors.info} />
-      </View>
+      {!stats ? <SkeletonStats /> : (
+        <View style={styles.statsGrid}>
+          <StatCard label="Total Items" value={stats.totalItems} icon="cube-outline" color={theme.colors.primary} />
+          <StatCard label="Available" value={stats.availableItems} icon="checkmark-circle-outline" color={theme.colors.available} />
+          <StatCard label="Borrowed" value={stats.borrowedItems} icon="arrow-forward-circle-outline" color={theme.colors.borrowed} />
+          <StatCard label="Places" value={stats.totalPlaces} icon="location-outline" color={theme.colors.info} />
+        </View>
+      )}
 
       {/* Quick Actions */}
       <Text style={styles.sectionTitle}>Quick Actions</Text>
@@ -146,7 +150,7 @@ function StatCard({ label, value, icon, color }: { label: string; value: number;
   return (
     <Card style={styles.statCard}>
       <Ionicons name={icon as any} size={22} color={color} />
-      <Text style={[styles.statValue, { color }]}>{value}</Text>
+      <AnimatedNumber value={value} style={[styles.statValue, { color }]} />
       <Text style={styles.statLabel}>{label}</Text>
     </Card>
   );

@@ -8,6 +8,7 @@ import { Badge } from '@/components/ui/Badge';
 import { Button } from '@/components/ui/Button';
 import { BorrowModal } from '@/components/BorrowModal';
 import { NovaBadge } from '@/components/NovaBadge';
+import { getCategoryConfig } from '@/constants/categories';
 import { useAuthStore } from '@/stores/auth.store';
 import { DEMO_MODE } from '@/lib/demo';
 import { MOCK_ITEMS } from '@/mock';
@@ -62,7 +63,10 @@ export default function ItemDetailScreen() {
       </View>
 
       {item.brandName && <Text style={styles.brand}>{item.brandName}</Text>}
-      <Text style={styles.category}>{item.category}</Text>
+      <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6, marginBottom: 14 }}>
+        <Ionicons name={getCategoryConfig(item.category).icon as any} size={14} color={getCategoryConfig(item.category).color} />
+        <Text style={styles.category}>{getCategoryConfig(item.category).label}</Text>
+      </View>
 
       {/* Location */}
       <Card style={styles.locationCard}>
@@ -157,7 +161,7 @@ const styles = StyleSheet.create({
   header: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 4 },
   name: { color: theme.colors.text, fontSize: theme.fontSize.xxl, fontWeight: theme.fontWeight.bold, flex: 1, marginRight: 10 },
   brand: { color: theme.colors.textSecondary, fontSize: theme.fontSize.md, marginBottom: 2 },
-  category: { color: theme.colors.primary, fontSize: theme.fontSize.sm, marginBottom: 14, textTransform: 'capitalize' },
+  category: { color: theme.colors.primary, fontSize: theme.fontSize.sm, textTransform: 'capitalize' },
   locationCard: { flexDirection: 'row', alignItems: 'center', gap: 10, marginBottom: 14 },
   locationText: { color: theme.colors.text, fontSize: theme.fontSize.md, fontWeight: theme.fontWeight.semibold },
   locationSub: { color: theme.colors.textMuted, fontSize: theme.fontSize.sm },
