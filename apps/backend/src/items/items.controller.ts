@@ -23,6 +23,20 @@ export class ItemsController {
     return this.itemsService.findAll(filters);
   }
 
+  @Get('export/csv')
+  @Roles('admin')
+  @UseGuards(RolesGuard)
+  @Header('Content-Type', 'text/csv')
+  @Header('Content-Disposition', 'attachment; filename="campusvault-items.csv"')
+  async exportCsv(@Res() res: Response) {
+    const items = await this.itemsService.findAll({});
+    const headers = ['id', 'name', 'brandName', 'category', 'status', 'placeName', 'shelfName', 'condition', 'addedAt'];
+    const rows = items.map((item: any) =>
+      headers.map((h) => `"${String(item[h] ?? '').replace(/"/g, '""')}"`).join(',')
+    );
+    res.send([headers.join(','), ...rows].join('\n'));
+  }
+
   @Get(':id')
   findOne(@Param('id') id: string) {
     return this.itemsService.findOne(id);
@@ -68,19 +82,5 @@ export class ItemsController {
   @UseGuards(RolesGuard)
   remove(@Param('id') id: string) {
     return this.itemsService.remove(id);
-  }
-
-  @Get('export/csv')
-  @Roles('admin')
-  @UseGuards(RolesGuard)
-  @Header('Content-Type', 'text/csv')
-  @Header('Content-Disposition', 'attachment; filename="campusvault-items.csv"')
-  async exportCsv(@Res() res: Response) {
-    const items = await this.itemsService.findAll({});
-    const headers = ['id', 'name', 'brandName', 'category', 'status', 'placeName', 'shelfName', 'condition', 'addedAt'];
-    const rows = items.map((item: any) =>
-      headers.map((h) => `"${String(item[h] ?? '').replace(/"/g, '""')}"`).join(',')
-    );
-    res.send([headers.join(','), ...rows].join('\n'));
   }
 }
