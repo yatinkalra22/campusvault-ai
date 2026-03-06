@@ -1,8 +1,11 @@
 import { Tabs } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
+import { useResponsive } from '@/hooks/useResponsive';
 import { theme } from '@/constants/theme';
 
 export default function TabsLayout() {
+  const { isWide } = useResponsive();
+
   return (
     <Tabs
       screenOptions={{
@@ -10,13 +13,15 @@ export default function TabsLayout() {
           backgroundColor: theme.colors.surface,
           borderTopColor: theme.colors.border,
           borderTopWidth: 1,
-          height: 60,
-          paddingBottom: 8,
-          paddingTop: 4,
+          height: isWide ? 68 : 60,
+          paddingBottom: isWide ? 12 : 8,
+          paddingTop: isWide ? 8 : 4,
+          // Center tabs on wide screens
+          ...(isWide ? { paddingHorizontal: '15%' } : {}),
         },
         tabBarActiveTintColor: theme.colors.primary,
         tabBarInactiveTintColor: theme.colors.textDim,
-        tabBarLabelStyle: { fontSize: 11, fontWeight: '600' },
+        tabBarLabelStyle: { fontSize: isWide ? 12 : 11, fontWeight: '600' },
         headerShown: false,
       }}
     >

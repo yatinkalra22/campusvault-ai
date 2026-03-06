@@ -1,15 +1,18 @@
 import { useEffect, useState } from 'react';
-import { View, Text, StyleSheet, ScrollView, TouchableOpacity, RefreshControl } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, TouchableOpacity, RefreshControl, useWindowDimensions } from 'react-native';
 import { router } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { theme } from '@/constants/theme';
 import { Card } from '@/components/ui/Card';
 import { SkeletonList } from '@/components/SkeletonList';
+import { ResponsiveContainer } from '@/components/ResponsiveContainer';
 import { DEMO_MODE } from '@/lib/demo';
 import { MOCK_PLACES } from '@/mock';
 import api from '@/services/api';
 
 export default function ExploreScreen() {
+  const { width } = useWindowDimensions();
+  const columns = width >= 1024 ? 3 : width >= 768 ? 2 : 1;
   const [places, setPlaces] = useState<any[] | null>(null);
   const [refreshing, setRefreshing] = useState(false);
 
@@ -37,6 +40,7 @@ export default function ExploreScreen() {
       contentContainerStyle={styles.content}
       refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor={theme.colors.primary} />}
     >
+    <ResponsiveContainer>
       <Text style={styles.title}>Explore Places</Text>
       <Text style={styles.subtitle}>Browse locations and their inventory</Text>
 
@@ -49,6 +53,7 @@ export default function ExploreScreen() {
           places.map((place) => (
             <TouchableOpacity
               key={place.id}
+              style={{ width: columns > 1 ? `${Math.floor(100 / columns) - 2}%` : '100%' } as any}
               onPress={() => router.push(`/place/${place.id}`)}
               activeOpacity={0.7}
             >
@@ -69,6 +74,7 @@ export default function ExploreScreen() {
           ))
         )}
       </View>
+    </ResponsiveContainer>
     </ScrollView>
   );
 }
@@ -78,7 +84,7 @@ const styles = StyleSheet.create({
   content: { padding: theme.spacing.lg, paddingTop: 60 },
   title: { color: theme.colors.text, fontSize: theme.fontSize.xxl, fontWeight: theme.fontWeight.bold },
   subtitle: { color: theme.colors.textMuted, fontSize: theme.fontSize.md, marginBottom: 24 },
-  grid: { gap: 12 },
+  grid: { gap: 12, flexDirection: 'row', flexWrap: 'wrap' },
   placeCard: { alignItems: 'flex-start', gap: 6 },
   placeIcon: {
     width: 48, height: 48, borderRadius: theme.radius.md,

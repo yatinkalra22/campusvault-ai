@@ -8,6 +8,7 @@ import { Card } from '@/components/ui/Card';
 import { Badge } from '@/components/ui/Badge';
 import { useVoice } from '@/hooks/useVoice';
 import { NovaBadge } from '@/components/NovaBadge';
+import { ResponsiveContainer } from '@/components/ResponsiveContainer';
 import { DEMO_MODE } from '@/lib/demo';
 import { MOCK_ITEMS } from '@/mock';
 import api from '@/services/api';
@@ -47,6 +48,7 @@ export default function SearchScreen() {
 
   return (
     <ScrollView style={styles.container} contentContainerStyle={styles.content}>
+    <ResponsiveContainer>
       <Text style={styles.title}>Search Inventory</Text>
       <Text style={styles.subtitle}>Find items using natural language or voice</Text>
       <NovaBadge label="Powered by Nova Lite + Nova Sonic" />
@@ -128,6 +130,7 @@ export default function SearchScreen() {
       ) : query && !searching ? (
         <Text style={styles.noResults}>No results found. Try a different query.</Text>
       ) : null}
+    </ResponsiveContainer>
     </ScrollView>
   );
 }

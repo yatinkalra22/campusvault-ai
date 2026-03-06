@@ -6,6 +6,7 @@ import { Card } from '@/components/ui/Card';
 import { Badge } from '@/components/ui/Badge';
 import { Button } from '@/components/ui/Button';
 import { useAuthStore } from '@/stores/auth.store';
+import { ResponsiveContainer } from '@/components/ResponsiveContainer';
 import { DEMO_MODE } from '@/lib/demo';
 import { MOCK_BORROWS } from '@/mock';
 import api from '@/services/api';
@@ -24,6 +25,7 @@ export default function ProfileScreen() {
 
   return (
     <ScrollView style={styles.container} contentContainerStyle={styles.content}>
+    <ResponsiveContainer>
       {/* Profile Header */}
       <View style={styles.profileHeader}>
         <View style={styles.avatar}>
@@ -72,6 +74,7 @@ export default function ProfileScreen() {
 
       {/* Logout */}
       <Button title="Sign Out" variant="outline" onPress={logout} style={{ marginTop: 24 }} />
+    </ResponsiveContainer>
     </ScrollView>
   );
 }

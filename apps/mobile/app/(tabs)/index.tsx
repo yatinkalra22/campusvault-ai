@@ -10,6 +10,7 @@ import { useNotificationsStore } from '@/stores/notifications.store';
 import { NovaBadge } from '@/components/NovaBadge';
 import { AnimatedNumber } from '@/components/AnimatedNumber';
 import { SkeletonStats, SkeletonList } from '@/components/SkeletonList';
+import { ResponsiveContainer } from '@/components/ResponsiveContainer';
 import { DEMO_MODE } from '@/lib/demo';
 import { MOCK_ITEMS, MOCK_PLACES } from '@/mock';
 import api from '@/services/api';
@@ -75,6 +76,7 @@ export default function HomeScreen() {
       contentContainerStyle={styles.content}
       refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor={theme.colors.primary} />}
     >
+    <ResponsiveContainer>
       <View style={styles.header}>
         <View>
           <Text style={styles.greeting}>Welcome back,</Text>
@@ -142,6 +144,7 @@ export default function HomeScreen() {
           </TouchableOpacity>
         ))
       )}
+    </ResponsiveContainer>
     </ScrollView>
   );
 }
