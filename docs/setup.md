@@ -22,10 +22,10 @@ cp apps/backend/.env.example apps/backend/.env
 npm run backend:dev
 
 # Mobile/Web (new terminal)
-cp apps/mobile/.env.example apps/mobile/.env
+cp apps/frontend/.env.example apps/frontend/.env
 # Edit .env with API URL
-npm run mobile:web     # browser
-npm run mobile:start   # expo go
+npm run frontend:web     # browser
+npm run frontend:start   # expo go
 ```
 
 ## AWS Setup
@@ -64,5 +64,5 @@ Policies needed: DynamoDB, S3, Bedrock (InvokeModel), SES. For local dev, use AW
 npm run backend:dev
 
 # Terminal 2: Expo
-npm run mobile:web
+npm run frontend:web
 ```

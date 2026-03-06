@@ -53,7 +53,7 @@ Snap photo --> Nova identifies item --> Assign to location --> Search anytime --
 campusvault-ai/
   apps/
     backend/          # NestJS API (port 3001)
-    mobile/           # Expo app (iOS + Android + Web)
+    frontend/           # Expo app (iOS + Android + Web)
   packages/
     shared/           # Shared TypeScript types
   docs/               # Documentation
@@ -73,13 +73,13 @@ cp apps/backend/.env.example apps/backend/.env
 npm run backend:dev
 
 # Frontend (new terminal)
-cp apps/mobile/.env.example apps/mobile/.env
-npm run mobile:web
+cp apps/frontend/.env.example apps/frontend/.env
+npm run frontend:web
 ```
 
 ### Demo Mode
 
-Run the frontend without a backend by setting `EXPO_PUBLIC_DEMO_MODE=true` in `apps/mobile/.env`. This uses mock data for places, items, and stats.
+Run the frontend without a backend by setting `EXPO_PUBLIC_DEMO_MODE=true` in `apps/frontend/.env`. This uses mock data for places, items, and stats.
 
 ## Documentation
 
@@ -91,7 +91,7 @@ Run the frontend without a backend by setting `EXPO_PUBLIC_DEMO_MODE=true` in `a
 
 ## Branding
 
-White-label ready. Default brand: **Indiana Tech**. Modify `assets/branding/config.ts` and `apps/mobile/src/constants/theme.ts` to rebrand for any campus.
+White-label ready. Default brand: **Indiana Tech**. Modify `assets/branding/config.ts` and `apps/frontend/src/constants/theme.ts` to rebrand for any campus.
 
 ## License
 
