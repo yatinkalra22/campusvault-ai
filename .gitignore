@@ -37,15 +37,17 @@ coverage/
 # Local plan (not committed)
 .plan/
 
-# Expo
-android/
-ios/
+# Expo / React Native
+expo-env.d.ts
 *.jks
 *.p8
 *.p12
 *.key
+*.pem
 *.mobileprovision
 *.orig.*
+.kotlin/
+.metro-health-check*
 
 # Serverless
 .serverless/
